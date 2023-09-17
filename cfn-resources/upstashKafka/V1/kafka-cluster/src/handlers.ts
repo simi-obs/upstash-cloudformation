@@ -48,7 +48,6 @@ class Resource extends BaseResource<ResourceModel> {
       ProgressEvent.progress<ProgressEvent<ResourceModel, CallbackContext>>(
         model
       );
-
     try {
       const response: UpstashKafkaClusterInfoResponse = await fetch(
         `https://api.upstash.com/v2/kafka/cluster/`,
@@ -88,7 +87,10 @@ class Resource extends BaseResource<ResourceModel> {
       // Setting Status to success will signal to CloudFormation that the operation is complete
       progress.status = OperationStatus.Success;
     } catch (err) {
-      logger.log(err);
+      // logger.log(err);
+      // await new Promise((r) => setTimeout(r, 2000));
+      // logger.log(JSON.stringify({ model, request }, null, 2));
+      // await new Promise((r) => setTimeout(r, 2000));
       // exceptions module lets CloudFormation know the type of failure that occurred
       throw new exceptions.InternalFailure(err.message);
       // this can also be done by returning a failed progress event

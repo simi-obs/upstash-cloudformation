@@ -26,7 +26,8 @@ def modify_schema_content(original_content, subversion):
 
 
 def build_resource_package(relative_path_to_resource_directory, subversion):
-
+    subprocess.run(['node', '--version'],
+                           cwd=relative_path_to_resource_directory).check_returncode()
     json_files = [f for f in listdir(
         relative_path_to_resource_directory) if f.endswith('.json') and not f in ['package.json', 'package-lock.json', 'tsconfig.json']]
     # find json file (its name). only one should be present
@@ -44,7 +45,7 @@ def build_resource_package(relative_path_to_resource_directory, subversion):
                 original_schema_content, subversion)
             rewrite_file_content(schema_file, modified_schema_content)
             subprocess.run(
-                ['yarn', 'build'], cwd=relative_path_to_resource_directory).check_returncode()
+                ['npm', 'run', 'build'], cwd=relative_path_to_resource_directory).check_returncode()
             subprocess.run(['cfn', 'submit', '--dry-run'],
                            cwd=relative_path_to_resource_directory).check_returncode()
 
@@ -72,7 +73,6 @@ def check_subversion_existence(s3_client, bucket_name, module_name, major_versio
         module_name, major_version, subversion)
     response = s3_client.list_objects_v2(
         Bucket=bucket_name, Prefix=full_version_prefix)
-    print(json.dumps(response, indent=2, default=str))
     if ('Contents' in response) and (len(response['Contents']) > 0):
         print('Prefix {} already exists in bucket {}'.format(
             full_version_prefix, bucket_name))
